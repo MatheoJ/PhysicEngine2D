@@ -44,3 +44,29 @@ Vec2 Force::GenerateGravitaionalForce(const Particle& a, const Particle& b, floa
 
 	return attractionForce;
 }
+
+Vec2 Force::GenerateSpringForce(const Particle& particle, Vec2 anchor, float restLength, float k)
+{
+	Vec2  d = particle.position - anchor;
+
+	float displacement = d.Magnitude() - restLength;
+
+	Vec2 springDirection = d.UnitVector();
+	float springMagnitude = displacement * -k;
+
+	Vec2 springForce = springDirection * springMagnitude;
+	return springForce;
+}
+
+Vec2 Force::GenerateSpringForce(const Particle& a, const Particle& b, float restLength, float k)
+{
+	Vec2  d = a.position - b.position;
+
+	float displacement = d.Magnitude() - restLength;
+
+	Vec2 springDirection = d.UnitVector();
+	float springMagnitude = displacement * -k;
+
+	Vec2 springForce = springDirection * springMagnitude;
+	return springForce;
+}
