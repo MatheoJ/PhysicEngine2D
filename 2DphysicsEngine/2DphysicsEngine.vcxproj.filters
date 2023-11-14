@@ -38,7 +38,7 @@
     <ClCompile Include="lib\SDL2_gfx\SDL2_rotozoom.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Physics\Particle.cpp">
+    <ClCompile Include="src\Physics\Body.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Physics\Vec2.cpp">
@@ -56,6 +56,9 @@
     <ClCompile Include="src\Physics\Force.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Physics\Shape.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lib\SDL2_gfx\SDL2_gfxPrimitives.h">
@@ -70,7 +73,7 @@
     <ClInclude Include="lib\SDL2_gfx\SDL2_rotozoom.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Physics\Particle.h">
+    <ClInclude Include="src\Physics\Body.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Physics\Vec2.h">
@@ -86,6 +89,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Physics\Force.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Physics\Shape.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
