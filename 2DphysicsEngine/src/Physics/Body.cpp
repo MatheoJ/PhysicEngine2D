@@ -1,5 +1,6 @@
 #include "Body.h"
 #include <iostream>
+#include <math.h>
 
 Body::Body(const Shape& shape, float x, float y, float mass)
 {
@@ -36,6 +37,9 @@ Body::~Body()
 
 void Body::IntegrateLinear(float dt)
 {
+	if (this->IsStatic())
+		return;
+
 	this->acceleration = this->sumForces * this->invMass;
 	this->velocity += this->acceleration * dt;
 	this->position += this->velocity * dt;
@@ -45,6 +49,9 @@ void Body::IntegrateLinear(float dt)
 
 void Body::IntegrateAngular(float dt)
 {
+	if(this->IsStatic())
+		return;
+
 	this->angularAcceleration = this->sumTorque * this->invI;
 	this->angularVelocity += this->angularAcceleration * dt;
 	this->rotation += this->angularVelocity * dt;
@@ -81,4 +88,10 @@ void Body::Update(float dt)
 		PolygonShape* polygon = (PolygonShape*)this->shape;
 		polygon->UpdateVertices(this->rotation, this->position);
 	}
+}
+
+bool Body::IsStatic() const
+{
+	float epsilon = 0.005;
+	return fabs(invMass - 0.0) < epsilon;
 }

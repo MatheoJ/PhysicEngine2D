@@ -2,6 +2,8 @@
 #include "Physics/Constants.h"
 #include "Physics/Force.h"
 #include <iostream>
+#include "Physics/CollisionDetection.h"
+#include "Physics/Contact.h"
 
 bool Application::IsRunning() {
     return running;
@@ -16,9 +18,13 @@ void Application::Setup() {
     anchor = Vec2(Graphics::Width() / 2, 30);
 
 
-    Body* box = new Body(BoxShape(200,100), Graphics::Width() / 2, Graphics::Height() / 2, 2.0);
-	bodies.push_back(box);
+    Body* bigCircle = new Body(CircleShape(200), Graphics::Width()/2, Graphics::Height() / 2, 0.0);
+
+
     
+
+
+	bodies.push_back(bigCircle);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -53,27 +59,41 @@ void Application::Input() {
                 if (event.key.keysym.sym == SDLK_RIGHT)
 					pushForce.x = 0;
                 break;
-            case SDL_MOUSEMOTION:
-                mouseCursor.x = event.motion.x;
-                mouseCursor.y = event.motion.y;
-                break;
-            case SDL_MOUSEBUTTONDOWN:
-                if (!leftMouseButtonDown && event.button.button == SDL_BUTTON_LEFT) {
-                    leftMouseButtonDown = true;
-                    int x, y;
-                    SDL_GetMouseState(&x, &y);
-                    mouseCursor.x = x;
-                    mouseCursor.y = y;
-                }
-                break;
-            case SDL_MOUSEBUTTONUP:
-                if (leftMouseButtonDown && event.button.button == SDL_BUTTON_LEFT) {
-                    leftMouseButtonDown = false;
-                    Vec2 impulseDirection = (bodies[0]->position - mouseCursor).UnitVector();
-                    float impulseMagnitude = (bodies[0]->position - mouseCursor).Magnitude() * 5.0;
-                    bodies[0]->velocity = impulseDirection * impulseMagnitude;
-                }
-                break;
+                case SDL_MOUSEBUTTONDOWN:
+                    if (!leftMouseButtonDown && event.button.button == SDL_BUTTON_LEFT) {
+                        leftMouseButtonDown = true;
+                        int x, y;
+                        SDL_GetMouseState(&x, &y);
+                        Body* smallCircle = new Body(CircleShape(20), x, y, 2.0);
+                        bodies.push_back(smallCircle);
+                    }
+                    break;
+                case SDL_MOUSEBUTTONUP:
+                    if (leftMouseButtonDown && event.button.button == SDL_BUTTON_LEFT) {
+						leftMouseButtonDown = false;
+					}
+					break;
+            //case SDL_MOUSEMOTION:
+            //    mouseCursor.x = event.motion.x;
+            //    mouseCursor.y = event.motion.y;
+            //    break;
+            //case SDL_MOUSEBUTTONDOWN:
+            //    if (!leftMouseButtonDown && event.button.button == SDL_BUTTON_LEFT) {
+            //        leftMouseButtonDown = true;
+            //        int x, y;
+            //        SDL_GetMouseState(&x, &y);
+            //        mouseCursor.x = x;
+            //        mouseCursor.y = y;
+            //    }
+            //    break;
+            //case SDL_MOUSEBUTTONUP:
+            //    if (leftMouseButtonDown && event.button.button == SDL_BUTTON_LEFT) {
+            //        leftMouseButtonDown = false;
+            //        Vec2 impulseDirection = (bodies[0]->position - mouseCursor).UnitVector();
+            //        float impulseMagnitude = (bodies[0]->position - mouseCursor).Magnitude() * 5.0;
+            //        bodies[0]->velocity = impulseDirection * impulseMagnitude;
+            //    }
+            //    break;
         }
     }
 }
@@ -86,6 +106,7 @@ void Application::Update() {
 
     float deltaTime = (SDL_GetTicks() - timePreviousFrame) / 1000.0f;
     timePreviousFrame = SDL_GetTicks();
+    Graphics::ClearScreen(0xFF0b0f3b);
 
     // Limit the delta time to 15 milliseconds
     if (deltaTime > 0.015f)
@@ -100,12 +121,46 @@ void Application::Update() {
         //Vec2 weight =  Vec2(0, 9.8) * body->mass * PIXELS_PER_METER;
         //body->AddForce(weight);
 
-        float torque = 2000.f;
-        body->AddTorque(torque);
+        //Vec2 wind = Vec2(20 * PIXELS_PER_METER, 0);
+        //body->AddForce(wind);
+
     }
 
     for (auto body : bodies) {
         body->Update(deltaTime);
+    }
+
+    for (auto body : bodies) {
+        body->isColiding = false;
+    }
+
+
+    //Check collisions
+    for (int i = 0; i < bodies.size() - 1; i++) {
+        for (int j = i+1; j < bodies.size(); j++)
+        {
+            Body* bodyA = bodies[i];
+            Body* bodyB = bodies[j];
+
+            Contact contact;
+            if (CollisionDetection::IsColliding(bodyA, bodyB, contact)) {
+             
+                //Print the value of he contact
+                std::cout << "Contact: " << std::endl;
+                std::cout << "Start: " << contact.start.x << ", " << contact.start.y << std::endl;
+                std::cout << "End: " << contact.end.x << ", " << contact.end.y << std::endl;
+
+
+                Graphics::DrawLine(contact.start.x, contact.start.y, contact.start.x + contact.normal.x * 20, contact.start.y + contact.normal.y * 20, 0xFFFFFFFF);
+                Graphics::DrawFillCircle(contact.start.x, contact.start.y, 5, 0xFFFFFFFF);
+                Graphics::DrawFillCircle(contact.end.x, contact.end.y, 5, 0xFFFFFFFF);
+
+                bodyA->isColiding = true;
+				bodyB->isColiding = true;
+
+                contact.ResolvePenetration();
+            }
+        }
     }
 
     //checkBoundaries of the windows
@@ -139,16 +194,16 @@ void Application::Update() {
 // Render function (called several times per second to draw objects)
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Render() {
-    Graphics::ClearScreen(0xFF0b0f3b);
 
-    if (leftMouseButtonDown) {
-        Graphics::DrawLine(bodies[0]->position.x, bodies[0]->position.y, mouseCursor.x, mouseCursor.y, 0xFF0000FF);
-    }
+   
 
     for(auto body : bodies) {
+
+        Uint32 color = body->isColiding ? 0xFF0000FFF : 0xFFFFFFFF;
+
         if (body->shape->GetType() == CIRCLE) {
             CircleShape* circle = (CircleShape*)body->shape;
-			Graphics::DrawCircle(body->position.x, body->position.y, circle->radius, body->rotation ,0xFFFFFFFF);
+			Graphics::DrawCircle(body->position.x, body->position.y, circle->radius, body->rotation , color);
 		}
         else if(body->shape->GetType() == BOX){
             BoxShape* box = (BoxShape*)body->shape;
