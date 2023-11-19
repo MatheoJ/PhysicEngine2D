@@ -37,6 +37,8 @@ struct Body
 
 	void IntegrateLinear(float dt);
 	void IntegrateAngular(float dt);
+
+	void Update(float dt);
 };
 
 #endif

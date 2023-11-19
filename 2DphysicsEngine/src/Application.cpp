@@ -1,6 +1,7 @@
 #include "Application.h"
 #include "Physics/Constants.h"
 #include "Physics/Force.h"
+#include <iostream>
 
 bool Application::IsRunning() {
     return running;
@@ -15,8 +16,8 @@ void Application::Setup() {
     anchor = Vec2(Graphics::Width() / 2, 30);
 
 
-    Body* body = new Body(CircleShape(50),Graphics::Width() / 2, Graphics::Height() / 2, 2.0);
-	bodies.push_back(body);
+    Body* box = new Body(BoxShape(200,100), Graphics::Width() / 2, Graphics::Height() / 2, 2.0);
+	bodies.push_back(box);
     
 }
 
@@ -96,17 +97,19 @@ void Application::Update() {
         Vec2 drag = Force::GenerateDragForce(*body, 0.001);
         body->AddForce(drag);
 
-        Vec2 weight =  Vec2(0, 9.8) * body->mass * PIXELS_PER_METER;
-        body->AddForce(weight);
+        //Vec2 weight =  Vec2(0, 9.8) * body->mass * PIXELS_PER_METER;
+        //body->AddForce(weight);
 
-        float torque = 20;
+        float torque = 2000.f;
         body->AddTorque(torque);
     }
 
     for (auto body : bodies) {
-        body->IntegrateLinear(deltaTime);
-        body->IntegrateAngular(deltaTime);
+        body->Update(deltaTime);
+    }
 
+    //checkBoundaries of the windows
+    for (auto body : bodies) {
 
         if (body->shape->GetType() == CIRCLE) {
             CircleShape* circle = (CircleShape*)body->shape;
@@ -147,7 +150,10 @@ void Application::Render() {
             CircleShape* circle = (CircleShape*)body->shape;
 			Graphics::DrawCircle(body->position.x, body->position.y, circle->radius, body->rotation ,0xFFFFFFFF);
 		}
-        else {
+        else if(body->shape->GetType() == BOX){
+            BoxShape* box = (BoxShape*)body->shape;
+            Graphics::DrawPolygon(body->position.x, body->position.y, box->worldVertices, 0xFFFFFFFF);
+		
         }
 	}
 
