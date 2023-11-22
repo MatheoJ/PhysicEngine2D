@@ -25,6 +25,8 @@ struct Body
 	float I;
 	float invI;
 
+	float restitution;
+
 	Shape* shape = nullptr;
 
 	Body(const Shape& shape,float x, float y, float mass);
@@ -37,6 +39,8 @@ struct Body
 	void AddTorque(float torque);
 	void ClearForces();
 	void ClearTorque();
+
+	void ApplyImpulse(const Vec2& impulse);
 
 	void IntegrateLinear(float dt);
 	void IntegrateAngular(float dt);

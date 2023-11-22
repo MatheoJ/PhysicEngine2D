@@ -13,6 +13,7 @@ Body::Body(const Shape& shape, float x, float y, float mass)
 	this->angularVelocity = 0;
 	this->angularAcceleration = 0;
 	this->sumTorque = 0;
+	this->restitution = 1.0;
 
 	this->mass = mass;
 	if(mass == 0)
@@ -33,6 +34,14 @@ Body::~Body()
 {
 	delete shape;
 	std::cout << "Body destroyed" << std::endl;
+}
+
+void Body::ApplyImpulse(const Vec2& impulse)
+{
+	if(this->IsStatic())
+		return;
+
+	this->velocity += impulse * this->invMass;
 }
 
 void Body::IntegrateLinear(float dt)

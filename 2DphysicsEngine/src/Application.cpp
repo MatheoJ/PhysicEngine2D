@@ -18,13 +18,15 @@ void Application::Setup() {
     anchor = Vec2(Graphics::Width() / 2, 30);
 
 
-    Body* bigCircle = new Body(CircleShape(200), Graphics::Width()/2, Graphics::Height() / 2, 0.0);
+    Body* boxA = new Body(BoxShape(200,200), Graphics::Width()/2, Graphics::Height() / 2, 1.0);
+    Body* boxB = new Body(BoxShape(200, 200), Graphics::Width() / 2, Graphics::Height() / 2, 1.0);
 
+    boxA->angularVelocity = 0.4;
+    boxB->angularVelocity = 0.1;
 
-    
-
-
-	bodies.push_back(bigCircle);
+   
+	bodies.push_back(boxA);
+    bodies.push_back(boxB);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -59,19 +61,11 @@ void Application::Input() {
                 if (event.key.keysym.sym == SDLK_RIGHT)
 					pushForce.x = 0;
                 break;
-                case SDL_MOUSEBUTTONDOWN:
-                    if (!leftMouseButtonDown && event.button.button == SDL_BUTTON_LEFT) {
-                        leftMouseButtonDown = true;
-                        int x, y;
-                        SDL_GetMouseState(&x, &y);
-                        Body* smallCircle = new Body(CircleShape(20), x, y, 2.0);
-                        bodies.push_back(smallCircle);
-                    }
-                    break;
-                case SDL_MOUSEBUTTONUP:
-                    if (leftMouseButtonDown && event.button.button == SDL_BUTTON_LEFT) {
-						leftMouseButtonDown = false;
-					}
+                case SDL_MOUSEMOTION:
+                    int x, y;
+                    SDL_GetMouseState(&x, &y);
+                    bodies[0]->position.x = x;
+                    bodies[0]->position.y = y;
 					break;
             //case SDL_MOUSEMOTION:
             //    mouseCursor.x = event.motion.x;
@@ -113,10 +107,10 @@ void Application::Update() {
 		deltaTime = 0.015f;
 
     for (auto body : bodies) {        
-        body->AddForce(pushForce);
+        //body->AddForce(pushForce);
 
-        Vec2 drag = Force::GenerateDragForce(*body, 0.001);
-        body->AddForce(drag);
+        //Vec2 drag = Force::GenerateDragForce(*body, 0.001);
+        //body->AddForce(drag);
 
         //Vec2 weight =  Vec2(0, 9.8) * body->mass * PIXELS_PER_METER;
         //body->AddForce(weight);
@@ -145,10 +139,7 @@ void Application::Update() {
             Contact contact;
             if (CollisionDetection::IsColliding(bodyA, bodyB, contact)) {
              
-                //Print the value of he contact
-                std::cout << "Contact: " << std::endl;
-                std::cout << "Start: " << contact.start.x << ", " << contact.start.y << std::endl;
-                std::cout << "End: " << contact.end.x << ", " << contact.end.y << std::endl;
+                //contact.ResolveCollision();
 
 
                 Graphics::DrawLine(contact.start.x, contact.start.y, contact.start.x + contact.normal.x * 20, contact.start.y + contact.normal.y * 20, 0xFFFFFFFF);
@@ -158,7 +149,7 @@ void Application::Update() {
                 bodyA->isColiding = true;
 				bodyB->isColiding = true;
 
-                contact.ResolvePenetration();
+                
             }
         }
     }
@@ -207,7 +198,7 @@ void Application::Render() {
 		}
         else if(body->shape->GetType() == BOX){
             BoxShape* box = (BoxShape*)body->shape;
-            Graphics::DrawPolygon(body->position.x, body->position.y, box->worldVertices, 0xFFFFFFFF);
+            Graphics::DrawPolygon(body->position.x, body->position.y, box->worldVertices, color);
 		
         }
 	}
