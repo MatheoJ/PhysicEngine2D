@@ -2,19 +2,16 @@
 #define APPLICATION_H
 
 #include "./Graphics.h"
-#include "./Physics/Body.h"
+#include "./Physics/World.h"
+#include <vector>
 
 class Application {
     private:
+        bool debug = false;
         bool running = false;
-        std::vector<Body*> bodies;
-        Vec2 pushForce = Vec2(0, 0);
-        Vec2 mouseCursor = Vec2(0, 0);
-        bool leftMouseButtonDown = false;
+        World* world;
 
-        Vec2 anchor;
-        float k = 500;
-        float restLength = 5;
+        SDL_Texture* bgTexture;
 
     public:
         Application() = default;
