@@ -11,6 +11,10 @@ The goal of this project is to provide an introduction to the world of 2D game p
 - **Collision Detection & Resolution**: Detects and resolves collisions between rigid bodies.
 - **Physics Constraints**: Implements joints, ragdolls, and other constraints to improve engine stability.
 - **Forces & Friction**: Applies gravity, drag, and friction to objects for realistic simulation.
+  
+Full demo            |  Raggdoll demo
+:-------------------------:|:-------------------------:
+![](2DphysicsEngine/assets/GitAngryBirdPhysics.gif)  |  ![](2DphysicsEngine/assets/GifRaggDoll.gif)
 
 ## Topics Covered
 - Vectors & Matrices
@@ -21,8 +25,3 @@ The goal of this project is to provide an introduction to the world of 2D game p
 - Constraints & Joints
 - Basic Calculus for Physics Simulations
 
-
-
-![](2DphysicsEngine/assets/GitAngryBirdPhysics.gif)
-
-![](2DphysicsEngine/assets/GifRaggDoll.gif)
