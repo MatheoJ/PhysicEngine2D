@@ -1,7 +1,7 @@
 # 2D Game Physics Engine
 
 ## Overview
-This project is a simple 2D physics engine built from scratch in C++. It follows the concepts taught in a this online course: [Game Physics Engine Programming Course](https://pikuma.com/courses/game-physics-engine-programming). , covering fundamental physics principles such as vectors, forces, rigid body dynamics, and collision detection.
+This project is a simple 2D physics engine built from scratch in C++. It follows the concepts taught in a this online course: [Game Physics Engine Programming Course](https://pikuma.com/courses/game-physics-engine-programming). It is covering fundamental physics principles such as vectors, forces, rigid body dynamics, and collision detection.
 
 The goal of this project is to provide an introduction to the world of 2D game physics by implementing key concepts from first principles.
 
